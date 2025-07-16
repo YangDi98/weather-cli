@@ -13,9 +13,9 @@ WEATHER_EMOJI = {
     "Sand": "🏜️",
     "Ash": "🌋",
     "Squall": "🌬️",
-    "Tornado": "🌪️"
+    "Tornado": "🌪️",
 }
 
-def get_unit_label(unit: str) -> str:
-    return f'\u00B0{"C" if unit == 'metric' else "F"}'
 
+def get_unit_label(unit: str) -> str:
+    return f'\u00b0{"C" if unit == 'metric' else "F"}'
