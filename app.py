@@ -13,7 +13,9 @@ def take_argument():
     parser = argparse.ArgumentParser(prog="MyWeatherCli")
     parser.add_argument("--city", required=True)
     parser.add_argument("--country", required=False)
-    parser.add_argument("--unit", required=False, choices=["metric", "imperial"])
+    parser.add_argument(
+        "--unit", required=False, choices=["metric", "imperial"]
+    )
     parser.add_argument("-f", "--forecast", action="store_true")
     args = parser.parse_args()
     return args
@@ -62,9 +64,17 @@ def get_weather(lat: float, lon: float, unit: str) -> Optional[dict[str, str]]:
         print("Something went wrong when trying to fetch weather")
 
 
-def get_forecast(lat: float, lon: float, unit: str) -> Optional[dict[str, str]]:
+def get_forecast(
+    lat: float, lon: float, unit: str
+) -> Optional[dict[str, str]]:
     unit_label = get_unit_label(unit)
-    params = {"appid": WEATHER_API_KEY, "lat": lat, "lon": lon, "units": unit, "cnt": 3}
+    params = {
+        "appid": WEATHER_API_KEY,
+        "lat": lat,
+        "lon": lon,
+        "units": unit,
+        "cnt": 3,
+    }
     try:
         res = requests.get(f"{WEATHER_API}/data/2.5/forecast", params=params)
         res.raise_for_status()
@@ -77,9 +87,11 @@ def get_forecast(lat: float, lon: float, unit: str) -> Optional[dict[str, str]]:
             max_temp = f"{day_forecast['main']['temp_max']}{unit_label}"
             description = day_forecast["weather"][0]["description"]
             icon = WEATHER_EMOJI.get(day_forecast["weather"][0]["main"], "❓")
-            print(
-                f"{datetime_str}:00:\t {icon}  {description} \tMax {max_temp} \tMin {min_temp}"
+            message = (
+                f"{datetime_str}:00:\t {icon}  {description}"
+                f"\tMax {max_temp} \tMin {min_temp}"
             )
+            print(message)
     except RequestException:
         print("Something went wrong when trying to fetch forecast")
 
@@ -93,11 +105,16 @@ def main():
     current_weather = get_weather(coordinates["lat"], coordinates["lon"], unit)
     if not current_weather:
         return
-    location_name_str = f"{args.city},{args.country}" if args.country else args.city
-    print(f"Weather in {location_name_str}")
-    print(
-        f"{current_weather['icon']}\t{current_weather['description']}, temperature {current_weather['temp']}, feels like {current_weather['feels_like']}"
+    location_name_str = (
+        f"{args.city},{args.country}" if args.country else args.city
     )
+    message = (
+        f"{current_weather['icon']}\t{current_weather['description']}, "
+        f"temperature {current_weather['temp']}, "
+        f"feels like {current_weather['feels_like']}"
+    )
+    print(f"Weather in {location_name_str}")
+    print(message)
     if args.forecast:
         get_forecast(coordinates["lat"], coordinates["lon"], unit)
 
